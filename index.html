@@ -15,15 +15,22 @@
 			<h4>option <%= optionNum %></h4>
 			<input type="text" class="input-small" name="num" placeholder="<%= num %>" value="<%= num %>" /> <i class="icon-remove"></i>
 			<input type="text" class="input-small" name="size" placeholder="<%= size %>" />
-			<input type="text" class="input-small" name="unit" placeholder="<%= unit %>" /> for
+			<select name="unit" class="input-small">
+				<option value=""></option>
+				<optgroup label="volume">
+					<option value="33.814">liters</option>
+					<option value="1">ounces</option>
+				</optgroup>
+			</select> for
 			<input type="text" class="input-small" name="price" placeholder="<%= price %>" />
+			<div class="summary"></summary>
 			<hr />
 		</div>
 	</script>
 </head>
 <body>
 	<div class="content">
-		<h1>Which is the better deal?</h1>		
+		<h1>Which is the best deal?</h1>		
 		<div id="deals"></div>
 		<button class="button btn" id="add">add</button>
 		<button class="button btn" id="compare">compare</button>

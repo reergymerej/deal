@@ -4,8 +4,9 @@ $(function(){
 			return {
 				num: 1,
 				size: 2,
-				unit: 'Liter',
+				unit: undefined,
 				price: '$.99',
+				summary: '',
 				optionNum: options.models.length + 1
 			}
 		},
@@ -19,11 +20,26 @@ $(function(){
 		showDeal: function(){
 			//	find comparison unit
 			var comparisonUnit,
-				unitsUsed = _.uniq( this.pluck('unit') );
+				unitsUsed = _.uniq( this.pluck('unit') ),
+				lowestUnitPrice = 0;
 
 			console.log(unitsUsed);
 
-			console.log(this.models);
+			//	remove all indicators of "the deal"
+			$(this.models).each(function(i, m){
+				var unitPrice;
+				m.set('deal', false);
+
+				unitPrice = m.get('price') / ( m.get('num') * m.get('size') * parseFloat(m.get('unit')) );
+
+				lowestUnitPrice = Math.min(unitPrice, lowestUnitPrice);
+				
+				m.set('summary', unitPrice);
+			});
+
+			console.log(lowestUnitPrice);
+
+			
 
 			this.models[this.models.length - 1].set('deal', true);
 		}
@@ -31,26 +47,42 @@ $(function(){
 
 	var OptionView = Backbone.View.extend({
 		initialize: function(){
+			var that = this;
 			var template = _.template( $('#option-view').html(), this.model.toJSON() );
 			this.$el.html(template);
-			this.listenTo(this.model, 'change:deal', this.pick);
+			this.listenTo( this.model, 'change:deal', function(model, value){
+				that.pick( value )
+			});
+			this.listenTo( this.model, 'change:summary', function(model, value){
+				that.showSummary(value);
+			});
 		},
 		render: function(){
 			return this;
 		},
 		events: {
-			'blur input': 'updateModel'
+			'blur input, select': 'updateModel'
 		},
 		updateModel: function(ev){
 			var field = $(ev.target),
 				val = field.val(),
 				attribute = field.attr('name');
 
+			if(attribute !== 'unit'){
+				val = val.replace(/[^0-9.]/g, '');
+			};
+
 			this.model.set(attribute, val);
 		},
-		pick: function(){
-			console.log(arguments);
-			this.$el.addClass('alert alert-success');
+		pick: function(isDeal){
+			if(isDeal){
+				this.$el.addClass('alert alert-success');
+			} else {
+				this.$el.removeClass('alert alert-success');
+			};
+		},
+		showSummary: function(val){
+			this.$el.find('.summary').html(val);
 		}
 	});
 
@@ -74,6 +106,8 @@ $(function(){
 
 			//	append view
 			$('#deals').append( view.render().el );
+
+			view.$el.find('input').first().focus();
 		},
 		compare: function(){
 			options.showDeal()

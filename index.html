@@ -1,0 +1,32 @@
+<html>
+<head>
+	<title>deal</title>
+	<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/css/bootstrap-combined.min.css" rel="stylesheet">
+
+	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"></script>
+	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.10/backbone-min.js"></script>
+	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.2.2/bootstrap.min.js"></script>
+	<script type="text/javascript" src="deal.js"></script>
+
+	<!-- templates -->
+	<script type="text/template" id="option-view">
+		<div class="option">
+			<h4>option <%= optionNum %></h4>
+			<input type="text" class="input-small" name="num" placeholder="<%= num %>" value="<%= num %>" /> <i class="icon-remove"></i>
+			<input type="text" class="input-small" name="size" placeholder="<%= size %>" />
+			<input type="text" class="input-small" name="unit" placeholder="<%= unit %>" /> for
+			<input type="text" class="input-small" name="price" placeholder="<%= price %>" />
+			<hr />
+		</div>
+	</script>
+</head>
+<body>
+	<div class="content">
+		<h1>Which is the better deal?</h1>		
+		<div id="deals"></div>
+		<button class="button btn" id="add">add</button>
+		<button class="button btn" id="compare">compare</button>
+	</div>
+</body>
+</html>

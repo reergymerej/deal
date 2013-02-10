@@ -2,6 +2,7 @@
 <head>
 	<title>deal</title>
 	<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/css/bootstrap-combined.min.css" rel="stylesheet">
+	<link href="deal.css" rel="stylesheet">
 
 	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"></script>
@@ -18,8 +19,13 @@
 			<select name="unit" class="input-small">
 				<option value=""></option>
 				<optgroup label="volume">
-					<option value="33.814">liters</option>
-					<option value="1">ounces</option>
+					<option value="1" class="volume">ounces</option>
+					<option value="33.814" class="volume">liters</option>
+				</optgroup>
+				
+				<optgroup label="mass">
+					<option value="16" class="mass">pounds</option>
+					<option value="1" class="mass">ounces</option>
 				</optgroup>
 			</select> for
 			<input type="text" class="input-small" name="price" placeholder="<%= price %>" />
@@ -29,11 +35,15 @@
 	</script>
 </head>
 <body>
-	<div class="content">
-		<h1>Which is the best deal?</h1>		
+	<div class="container">
+		<h1>Which is the best deal?</h1>
+		<select id="measurement" class="input-small">
+			<option value="volume">volume</option>
+			<option value="mass">mass</option>
+		</select>		
 		<div id="deals"></div>
 		<button class="button btn" id="add">add</button>
-		<button class="button btn" id="compare">compare</button>
+		<button class="button btn btn-primary" id="compare">compare</button>
 	</div>
 </body>
 </html>

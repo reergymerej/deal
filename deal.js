@@ -7,7 +7,8 @@ $(function(){
 				unit: undefined,
 				price: '$.99',
 				summary: '',
-				optionNum: options.models.length + 1
+				optionNum: options.models.length + 1,
+				measurement: $('#measurement').val()
 			}
 		},
 		initialize: function(){
@@ -20,28 +21,33 @@ $(function(){
 		showDeal: function(){
 			//	find comparison unit
 			var comparisonUnit,
-				unitsUsed = _.uniq( this.pluck('unit') ),
-				lowestUnitPrice = 0;
-
-			console.log(unitsUsed);
+				lowestUnitPrice;
 
 			//	remove all indicators of "the deal"
 			$(this.models).each(function(i, m){
 				var unitPrice;
+
 				m.set('deal', false);
 
 				unitPrice = m.get('price') / ( m.get('num') * m.get('size') * parseFloat(m.get('unit')) );
 
-				lowestUnitPrice = Math.min(unitPrice, lowestUnitPrice);
+				if(!lowestUnitPrice){
+					lowestUnitPrice = unitPrice;
+				} else {
+					lowestUnitPrice = Math.min(unitPrice, lowestUnitPrice);
+				};
 				
-				m.set('summary', unitPrice);
+				m.set('unitPrice', unitPrice);
 			});
 
-			console.log(lowestUnitPrice);
-
-			
-
-			this.models[this.models.length - 1].set('deal', true);
+			this.each(function(m){
+				m.set('deal', m.get('unitPrice') === lowestUnitPrice);
+			});
+		},
+		changeMeasurement: function(measurement){
+			$(this.models).each(function(i, m){
+				m.set('measurement', measurement);
+			});
 		}
 	});
 
@@ -50,14 +56,19 @@ $(function(){
 			var that = this;
 			var template = _.template( $('#option-view').html(), this.model.toJSON() );
 			this.$el.html(template);
+
 			this.listenTo( this.model, 'change:deal', function(model, value){
 				that.pick( value )
 			});
-			this.listenTo( this.model, 'change:summary', function(model, value){
+			this.listenTo( this.model, 'change:unitPrice', function(model, value){
 				that.showSummary(value);
+			});
+			this.listenTo( this.model, 'change:measurement', function(){
+				that.displayUnits();
 			});
 		},
 		render: function(){
+			this.displayUnits();
 			return this;
 		},
 		events: {
@@ -83,16 +94,25 @@ $(function(){
 		},
 		showSummary: function(val){
 			this.$el.find('.summary').html(val);
+		},
+		displayUnits: function(){
+			$('option[class!="' + this.model.get('measurement') + '"]', this.$el).attr('disabled', 'disabled');
+			$('option[class="' + this.model.get('measurement') + '"]', this.$el).removeAttr('disabled');
+			$('select[name="unit"]', this.$el).val('');
 		}
 	});
 
 	var options = new Options();
 
 	var AppView = Backbone.View.extend({
-		el: $('.content'),
+		initialize: function(){
+			this.changeMeasurement();
+		},
+		el: $('.container'),
 		events: {
-			'click #add': 'newOption',
-			'click #compare': 'compare'
+			'click #add'			: 'newOption',
+			'click #compare'		: 'compare',
+			'change #measurement'	: 'changeMeasurement' 
 		},
 		newOption: function(){
 			//	create new model
@@ -108,9 +128,14 @@ $(function(){
 			$('#deals').append( view.render().el );
 
 			view.$el.find('input').first().focus();
+
+			$('#compare').fadeIn('fast');
 		},
 		compare: function(){
 			options.showDeal()
+		},
+		changeMeasurement: function(){
+			options.changeMeasurement( $('#measurement').val() );
 		}
 	});
 
